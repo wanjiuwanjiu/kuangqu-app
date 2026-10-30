@@ -57,26 +57,40 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // 校名标题区
-                Text(
-                  '矿区中学',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 30),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '校园墙',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 15),
-                ),
-                const SizedBox(height: 44),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // 键盘弹出时整体上移，保证表单与按钮始终可见
+            final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+            final minHeight = (constraints.maxHeight - 48 - keyboard)
+                .clamp(0.0, double.infinity);
+            return SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(28, 24, 28, 24 + keyboard),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: minHeight),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 校名标题区
+                    Text(
+                      '矿区中学',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '校 园 墙',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 14,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 44),
 
                 // 登录卡片
                 AnimatedContainer(
@@ -150,20 +164,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  '使用网页版同一账号登录\n新同学请先在网页版注册',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    height: 1.6,
-                    color: isLight
-                        ? AppColors.lightSubText
-                        : AppColors.darkSubText,
-                  ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '使用网页版同一账号登录\n新同学请先在网页版注册',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        height: 1.6,
+                        color: isLight
+                            ? AppColors.lightSubText
+                            : AppColors.darkSubText,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

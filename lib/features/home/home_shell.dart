@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme.dart';
 import '../../core/auth/session.dart';
+import '../posts/feed_page.dart';
 
 /// 主页外壳：底部三栏导航（帖子 / 消息 / 我的）
-/// 模块1 仅占位，后续模块逐个填充
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
 
@@ -22,11 +22,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final pages = [
-      _PlaceholderTab(
-        icon: Icons.article_outlined,
-        title: '帖子',
-        subtitle: '帖子流将在下一个模块开放',
-      ),
+      const FeedPage(),
       _PlaceholderTab(
         icon: Icons.notifications_none,
         title: '消息',
