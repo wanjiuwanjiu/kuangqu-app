@@ -147,7 +147,14 @@ class FeedNotifier extends AsyncNotifier<FeedState> {
     } else {
       liked.add(post.id);
     }
-    state = AsyncData(current.copyWith(liked: liked));
+    // 点赞数同步乐观更新，避免图标已变而数字滞后
+    final posts = current.posts
+        .map((p) => p.id == post.id
+            ? p.copyWith(
+                likeCount: (p.likeCount + (wasLiked ? -1 : 1)).clamp(0, 1 << 31))
+            : p)
+        .toList();
+    state = AsyncData(current.copyWith(posts: posts, liked: liked));
 
     try {
       final resp =
@@ -161,14 +168,22 @@ class FeedNotifier extends AsyncNotifier<FeedState> {
       }
       state = AsyncData(state.value!.copyWith(liked: settled));
     } catch (e) {
-      // 回滚
+      // 回滚点赞状态与数字
       final rollback = <String>{...(state.value?.liked ?? liked)};
       if (wasLiked) {
         rollback.add(post.id);
       } else {
         rollback.remove(post.id);
       }
-      state = AsyncData(state.value!.copyWith(liked: rollback));
+      final restored = state.value!.posts
+          .map((p) => p.id == post.id
+              ? p.copyWith(
+                  likeCount:
+                      (p.likeCount + (wasLiked ? 1 : -1)).clamp(0, 1 << 31))
+              : p)
+          .toList();
+      state = AsyncData(
+          state.value!.copyWith(posts: restored, liked: rollback));
       rethrow;
     }
   }

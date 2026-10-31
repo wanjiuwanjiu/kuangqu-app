@@ -40,6 +40,21 @@ class Post {
 
   String get relativeTime => timeAgo(createdAt);
 
+  Post copyWith({int? commentCount, int? likeCount}) => Post(
+        id: id,
+        authorId: authorId,
+        content: content,
+        category: category,
+        images: images,
+        isAnonymous: isAnonymous,
+        createdAt: createdAt,
+        authorNickname: authorNickname,
+        authorSub: authorSub,
+        visibility: visibility,
+        commentCount: commentCount ?? this.commentCount,
+        likeCount: likeCount ?? this.likeCount,
+      );
+
   factory Post.fromJson(Map<String, dynamic> j) {
     int countOf(dynamic v) {
       if (v is List && v.isNotEmpty && v.first is Map) {
