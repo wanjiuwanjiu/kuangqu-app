@@ -74,8 +74,17 @@ class ApiClient {
         );
         return true;
       }
-    } catch (_) {}
-    // 刷新失败：会话已失效，清空令牌由会话层跳回登录页
+    } on DioException catch (e) {
+      // 仅当服务端明确拒绝 refresh_token 时才判定会话失效
+      final status = e.response?.statusCode;
+      if (status == 400 || status == 401) {
+        await TokenStore.instance.clear();
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+    // 服务端返回非 ok（refresh_token 已失效）：清空令牌由会话层跳回登录页
     await TokenStore.instance.clear();
     return false;
   }
